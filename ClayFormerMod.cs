@@ -1,6 +1,8 @@
-﻿using HarmonyLib;
+using System; 
+using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
 namespace ClayFormer
@@ -31,30 +33,30 @@ namespace ClayFormer
         }
     }
 
-    [HarmonyPatch(typeof(BlockEntityClayForm), "RegenMeshForNextLayer")]
-    public class ClayFormRecipeSelectionPatch
+    [HarmonyPatch(typeof(GuiDialogBlockEntityRecipeSelector), MethodType.Constructor)]
+    [HarmonyPatch(new Type[] { typeof(string), typeof(ItemStack[]), typeof(Action<int>), typeof(Action), typeof(BlockPos), typeof(ICoreClientAPI) })]
+    public class RecipeGuiPatch
     {
-        private static int lastNotifiedRecipeId = -2;
-
         private static ClaymationEngine currentEngine;
 
-        static void Postfix(BlockEntityClayForm __instance)
+        static void Prefix(BlockPos blockEntityPos, ICoreClientAPI capi, ref Action<int> onSelectedRecipe)
         {
-            var capi = ClayFormerMod.GetClientAPI();
-            if (capi == null) return;
+            Action<int> originalOnSelect = onSelectedRecipe;
 
-            var currentRecipe = __instance.SelectedRecipe;
-            if (currentRecipe == null) return;
-
-            if (currentRecipe.RecipeId != lastNotifiedRecipeId)
+            Action<int> wrappedOnSelect = (selectedIndex) =>
             {
-                lastNotifiedRecipeId = currentRecipe.RecipeId;
 
-                currentEngine?.Stop();
+                originalOnSelect(selectedIndex);
 
-                currentEngine = new ClaymationEngine(capi, __instance);
-                currentEngine.Start();
-            }
+                if (capi.World.BlockAccessor.GetBlockEntity(blockEntityPos) is BlockEntityClayForm be)
+                {
+                    currentEngine?.Stop();
+                    currentEngine = new ClaymationEngine(capi, be);
+                    currentEngine.Start();
+                }
+            };
+
+            onSelectedRecipe = wrappedOnSelect;
         }
     }
 }
