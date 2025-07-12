@@ -1,4 +1,4 @@
-﻿using Vintagestory.API.Client;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
@@ -28,36 +28,22 @@ namespace ClayFormer
             if (isActive) return;
             isActive = true;
             lastKnownToolMode = -1;
-            timerId = capi.World.RegisterGameTickListener(OnGameTick, 20);
+            timerId = capi.World.RegisterGameTickListener(OnGameTick, 0);
             capi.ShowChatMessage(Lang.Get("clayformer:msg-started"));
         }
 
         public void Stop()
         {
-            if (!isActive) return;
-            isActive = false;
-            capi.World.UnregisterGameTickListener(timerId);
-        }
-
-        private bool IsLayerComplete(int y)
-        {
-            for (int x = 0; x < 16; x++)
+            if (isActive)
             {
-                for (int z = 0; z < 16; z++)
-                {
-                    if (clayForm.Voxels[x, y, z] != clayForm.SelectedRecipe.Voxels[x, y, z])
-                    {
-                        return false;
-                    }
-                }
+                isActive = false;
+                capi.World.UnregisterGameTickListener(timerId);
             }
-            return true;
         }
 
         private void OnGameTick(float dt)
         {
             var currentBlockEntity = capi.World.BlockAccessor.GetBlockEntity(clayForm.Pos);
-
             if (currentBlockEntity == null || currentBlockEntity.GetType() != typeof(BlockEntityClayForm))
             {
                 capi.ShowChatMessage(Lang.Get("clayformer:msg-success"));
@@ -85,11 +71,6 @@ namespace ClayFormer
 
             for (int y = 0; y < 16; y++)
             {
-                if (IsLayerComplete(y))
-                {
-                    continue;
-                }
-
                 for (int x = 0; x < 16; x++)
                 {
                     for (int z = 0; z < 16; z++)
@@ -103,7 +84,6 @@ namespace ClayFormer
                             bool removeAction = hasVoxel;
                             clayForm.SendUseOverPacket(capi.World.Player, voxelPos, BlockFacing.NORTH, removeAction);
                             return;
-
                         }
                     }
                 }
