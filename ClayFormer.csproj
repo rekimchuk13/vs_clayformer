@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
+		<AssemblyName>ClayFormer</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="assets\clayformer\lang\en.json" />
+	  <None Remove="assets\clayformer\lang\ru.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="0Harmony">
+		  <HintPath>..\ChiselExportToVox-main\lib\0Harmony.dll</HintPath>
+		</Reference>
+		<Reference Include="VintagestoryAPI">
+			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="VintagestoryLib">
+			<HintPath>lib\VintagestoryLib.dll</HintPath>
+		</Reference>
+		<Reference Include="VSSurvivalMod">
+			<HintPath>$(VINTAGE_STORY)/Mods/VSSurvivalMod.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="VSEssentials">
+			<HintPath>$(VINTAGE_STORY)/Mods/VSEssentials.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="VSCreativeMod">
+			<HintPath>$(VINTAGE_STORY)/Mods/VSCreativeMod.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="assets\clayformer\lang\en.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="assets\clayformer\lang\ru.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="modinfo.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<Target Name="CreateModZip" AfterTargets="Build">
+		<PropertyGroup>
+			<ModName>$(AssemblyName)</ModName>
+			<ModZipPath>C:\Users\rekim\AppData\Roaming\VintagestoryData\Mods\$(ModName).zip</ModZipPath>
+		</PropertyGroup>
+
+		<Message Text="--- Creating Mod ZIP for $(ModName) ---" Importance="high" />
+		<Message Text="Zipping to $(ModZipPath)" Importance="high" />
+
+		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -Command &quot;Compress-Archive -Path '$(OutputPath)\assets', '$(OutputPath)\modinfo.json', '$(OutputPath)\$(AssemblyName).dll' -DestinationPath '$(ModZipPath)' -Force&quot;" />
+
+		<Message Text="--- Mod ZIP created successfully! ---" Importance="high" />
+	</Target>
+
+</Project>

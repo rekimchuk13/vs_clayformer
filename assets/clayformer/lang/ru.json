@@ -1,0 +1,5 @@
+{
+  "msg-started": "[ClayFormer] Начата автоматическая лепка...",
+  "msg-paused": "[ClayFormer] Процесс приостановлен. Возьмите глину в активный слот.",
+  "msg-success": "[ClayFormer] Лепка завершена!"
+}

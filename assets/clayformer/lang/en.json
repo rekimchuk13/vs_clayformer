@@ -1,0 +1,5 @@
+{
+  "msg-started": "[ClayFormer] Auto-forming has started...",
+  "msg-paused": "[ClayFormer] Process paused. Hold clay in your active slot to continue.",
+  "msg-success": "[ClayFormer] Forming complete!"
+}
