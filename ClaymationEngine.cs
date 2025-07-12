@@ -71,6 +71,25 @@ namespace ClayFormer
             }
 
             int actionsThisTick = 0;
+            for (int y = 0; y < 16; y++)
+            {
+                for (int x = 0; x < 16; x++)
+                {
+                    for (int z = 0; z < 16; z++)
+                    {
+                        if (clayForm.Voxels[x, y, z] != clayForm.SelectedRecipe.Voxels[x, y, z])
+                        {
+                            var voxelPos = new Vec3i(x, y, z);
+                            clayForm.SendUseOverPacket(capi.World.Player, voxelPos, BlockFacing.NORTH, clayForm.Voxels[x, y, z]);
+                            actionsThisTick++;
+                            if (actionsThisTick >= 16)
+                            {
+                                return; 
+                            }
+                        }
+                    }
+                }
+            }
 
             for (int y = 0; y < 16; y++)
             {
@@ -78,21 +97,11 @@ namespace ClayFormer
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                        bool hasVoxel = clayForm.Voxels[x, y, z];
-                        bool shouldHaveVoxel = clayForm.SelectedRecipe.Voxels[x, y, z];
-
-                        if (hasVoxel != shouldHaveVoxel)
+                        if (clayForm.Voxels[x, y, z] != clayForm.SelectedRecipe.Voxels[x, y, z])
                         {
                             var voxelPos = new Vec3i(x, y, z);
-                            bool removeAction = hasVoxel;
-                            clayForm.SendUseOverPacket(capi.World.Player, voxelPos, BlockFacing.NORTH, removeAction);
-
-                            actionsThisTick++;
-
-                            if (actionsThisTick >= 16)
-                            {
-                                return;
-                            }
+                            clayForm.SendUseOverPacket(capi.World.Player, voxelPos, BlockFacing.NORTH, clayForm.Voxels[x, y, z]);
+                            return; 
                         }
                     }
                 }
