@@ -28,6 +28,7 @@ namespace ClayFormer
             if (isActive) return;
             isActive = true;
             lastKnownToolMode = -1;
+
             timerId = capi.World.RegisterGameTickListener(OnGameTick, 0);
             capi.ShowChatMessage(Lang.Get("clayformer:msg-started"));
         }
@@ -69,6 +70,8 @@ namespace ClayFormer
                 SetToolMode(0);
             }
 
+            int actionsThisTick = 0;
+
             for (int y = 0; y < 16; y++)
             {
                 for (int x = 0; x < 16; x++)
@@ -83,7 +86,13 @@ namespace ClayFormer
                             var voxelPos = new Vec3i(x, y, z);
                             bool removeAction = hasVoxel;
                             clayForm.SendUseOverPacket(capi.World.Player, voxelPos, BlockFacing.NORTH, removeAction);
-                            return;
+
+                            actionsThisTick++;
+
+                            if (actionsThisTick >= 16)
+                            {
+                                return;
+                            }
                         }
                     }
                 }
