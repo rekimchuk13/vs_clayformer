@@ -2,11 +2,11 @@
   "type": "code",
   "name": "Automatic Clay Former",
   "modid": "clayformer",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Automates the clay forming process. Just select a recipe, hold some clay, and let the mod do the work for you.",
   "authors": [ "rekimchuk13" ],
   "dependencies": {
-    "game": "1.20.12"
+    "game": "1.21.0"
   },
   "side": "Client"
 }
